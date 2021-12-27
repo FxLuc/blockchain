@@ -76,7 +76,8 @@ class ItemManager extends Component {
 
   handleDelivery = async(itemAddress) => {
     const currentAccount = await this.web3.eth.getAccounts()
-    const itemIndex = await this.web3.eth.call({ from: currentAccount[0], to: itemAddress, data: "0x2986c0e5" })
+    const functionSignatureIndex = await this.web3.eth.abi.encodeFunctionSignature("index()")
+    const itemIndex = await this.web3.eth.call({ from: currentAccount[0], to: itemAddress, data: functionSignatureIndex })
     await this.itemManager.methods.triggerDelivery(this.web3.utils.hexToNumber(itemIndex)).send({ from: currentAccount[0] })
   }
 
