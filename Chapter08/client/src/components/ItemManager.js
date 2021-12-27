@@ -5,7 +5,7 @@ import getWeb3 from "../getWeb3"
 import NextStep from "./NextStep"
 
 class ItemManager extends Component {
-  state = { loaded: false, cost: 0, itemName: "item_01", itemList: [] }
+  state = { loaded: false, cost: 0, itemName: "item_01", unit: 'Wei', itemList: [] }
 
   componentDidMount = async () => {
     try {
@@ -30,7 +30,7 @@ class ItemManager extends Component {
 
       this.listenToPaymentEvent();
 
-      // load items
+      // load items to table
       this.itemIndex = await this.itemManager.methods.getItemIndex().call()
       for (let i = this.itemIndex - 1; i >= 0; i--) {
         this.setState({ itemList: [...this.state.itemList, await this.itemManager.methods.items(i).call()] })
@@ -54,10 +54,18 @@ class ItemManager extends Component {
   }
 
   handleSubmit = async () => {
-    const { cost, itemName, itemList } = this.state
-    await this.itemManager.methods.createItem(itemName, cost).send({ from: this.accounts[0] })
+    const { cost, itemName, unit, itemList } = this.state
+    let value = 0
+    if (unit === 'Ether') {
+      value = this.web3.utils.toWei(cost, 'ether')
+    } else if (unit === 'Gwei') {
+      value = this.web3.utils.toWei(cost, 'gwei')
+    }
+    await this.itemManager.methods.createItem(itemName, value).send({ from: this.accounts[0] })
+
+    // add new item to table
     const itemIndex = await this.itemManager.methods.getItemIndex().call()
-    itemList.unshift(await this.itemManager.methods.items(itemIndex-1).call())
+    itemList.unshift(await this.itemManager.methods.items(itemIndex - 1).call())
     this.setState({ itemList })
   }
 
@@ -65,9 +73,8 @@ class ItemManager extends Component {
     this.itemManager.events.SupplyChainStep().on("data", async event => {
       const itemObject = await this.itemManager.methods.items(event.returnValues._itemIndex).call()
       const { itemList } = this.state
-       itemList[await itemList.indexOf(itemList.find(item => item._item === itemObject._item))] = itemObject
+      itemList[await itemList.indexOf(itemList.find(item => item._item === itemObject._item))] = itemObject
       this.setState({ itemList })
-      console.log(this.state.itemList);
     })
   }
 
@@ -80,14 +87,31 @@ class ItemManager extends Component {
         <div className="ItemManager">
           <h1><strong>SUPPLY CHAIN</strong></h1>
           <h4>Add Items</h4>
+
           <div className="form-group">
-            <label htmlFor="tienVay">Price (wei):</label>
-            <input name="cost" onChange={this.handleInputChange} type="number" className="form-control" value={this.state.cost} />
-          </div>
-          <div className="form-group">
-            <label htmlFor="tienVay">Idetifier:</label>
+            <label htmlFor="itemName">Idetifier:</label>
             <input name="itemName" value={this.state.itemName} onChange={this.handleInputChange} type="text" className="form-control" />
           </div>
+
+          <div className="row">
+            <div className="col">
+              <div className="form-group">
+                <label htmlFor="cost">Price:</label>
+                <input name="cost" onChange={this.handleInputChange} type="number" className="form-control" value={this.state.cost} />
+              </div>
+            </div>
+            <div className="col-3">
+              <div className="form-group">
+                <label htmlFor="unit">In:</label>
+                <select className="form-control" onChange={this.handleInputChange} name="unit" defaultValue="Wei">
+                  <option>Wei</option>
+                  <option>Gwei</option>
+                  <option>Ether</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           <button className="btn btn-info" type="button" onClick={this.handleSubmit}>Create</button>
         </div>
         <div className="ItemTable py-5">
