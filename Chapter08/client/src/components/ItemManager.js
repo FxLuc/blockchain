@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import ItemManagerContract from "../contracts/ItemManager.json"
 import ItemContract from "../contracts/Item.json"
 import getWeb3 from "../getWeb3"
+import NextStep from "./NextStep"
 
 class ItemManager extends Component {
   state = { loaded: false, cost: 0, itemName: "item_01", itemList: [] }
@@ -27,6 +28,9 @@ class ItemManager extends Component {
         ItemContract.networks[this.networkId] && ItemContract.networks[this.networkId].address,
       )
 
+      this.listenToPaymentEvent();
+
+      // load items
       this.itemIndex = await this.itemManager.methods.getItemIndex().call()
       for (let i = this.itemIndex - 1; i >= 0; i--) {
         this.setState({ itemList: [...this.state.itemList, await this.itemManager.methods.items(i).call()] })
@@ -53,16 +57,17 @@ class ItemManager extends Component {
     const { cost, itemName, itemList } = this.state
     await this.itemManager.methods.createItem(itemName, cost).send({ from: this.accounts[0] })
     const itemIndex = await this.itemManager.methods.getItemIndex().call()
-    itemList.push(await this.itemManager.methods.items(itemIndex-1).call())
+    itemList.unshift(await this.itemManager.methods.items(itemIndex-1).call())
     this.setState({ itemList })
   }
 
   listenToPaymentEvent = () => {
-    let self = this
-    this.itemManager.events.SupplyChainStep().on("message", async event => {
-      console.log(event)
-      let itemObject = await self.itemManager.methods.items(event.returnValues._itemIndex).call()
-      alert(`Item ${itemObject._identifier} was paid, deliver it now`)
+    this.itemManager.events.SupplyChainStep().on("data", async event => {
+      const itemObject = await this.itemManager.methods.items(event.returnValues._itemIndex).call()
+      const { itemList } = this.state
+       itemList[await itemList.indexOf(itemList.find(item => item._item === itemObject._item))] = itemObject
+      this.setState({ itemList })
+      console.log(this.state.itemList);
     })
   }
 
@@ -114,7 +119,7 @@ const Row = ({ data }) => (
     <td>{data._item}</td>
     <td>{data._identifier}</td>
     <td>{data._itemPrice}</td>
-    <td>{data._state}</td>
+    <NextStep step={data._state} />
   </tr>
 )
 
