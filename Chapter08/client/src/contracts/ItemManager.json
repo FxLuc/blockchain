@@ -37,7 +37,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -71,7 +72,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -84,7 +86,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -115,7 +118,8 @@
       "name": "triggerPayment",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -6016,12 +6020,13 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xeAC54f01b8EE5C6AD2aA94a1aCF551d015bDA870",
-      "transactionHash": "0xcf005b9736f31c95ba8710449e04f8a0b03aa23db9566308540f00f0c14ffb64"
+      "address": "0x8f12281b658202D0BcA4804F74c80c2652eAb1ab",
+      "transactionHash": "0x621273161cf40d7bde774f7ce0a15794b1b82155fc2f99621865f22f8128edfa"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-12-27T03:57:13.468Z",
+  "updatedAt": "2021-12-27T15:26:07.866Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},

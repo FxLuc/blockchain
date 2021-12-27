@@ -148,7 +148,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Chapter08/contracts/ItemManager.sol": "ItemManager"
+			"Chapter06/contracts/ItemManager.sol": "ItemManager"
 		},
 		"evmVersion": "istanbul",
 		"libraries": {},
@@ -162,7 +162,7 @@
 		"remappings": []
 	},
 	"sources": {
-		"Chapter08/contracts/Item.sol": {
+		"Chapter06/contracts/Item.sol": {
 			"keccak256": "0xb3eb28fa6874c3a23dfcd763283253066a9f56aeec324b13580c55314a1a49d6",
 			"license": "MIT",
 			"urls": [
@@ -170,7 +170,7 @@
 				"dweb:/ipfs/Qmb9vfn9pH1Jrgw58ySW1SCuzquVwJhEyoTwTTqYA97FQM"
 			]
 		},
-		"Chapter08/contracts/ItemManager.sol": {
+		"Chapter06/contracts/ItemManager.sol": {
 			"keccak256": "0x333e1b6e19f0ecacbd1d6c168f2111225223b91318121afe20e2f162e1b33422",
 			"license": "MIT",
 			"urls": [
@@ -178,7 +178,7 @@
 				"dweb:/ipfs/QmW5Ae6xEUHsSnosNKM3Ry8RUxWYRxyVDNud8gRkiAEAWb"
 			]
 		},
-		"Chapter08/contracts/Ownable.sol": {
+		"Chapter06/contracts/Ownable.sol": {
 			"keccak256": "0x3f5367a7bcc6dc12a0b6e7f4b9c6f4f26ef46e3141c36884409d9416012af853",
 			"license": "MIT",
 			"urls": [

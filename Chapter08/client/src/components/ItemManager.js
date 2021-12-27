@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import ItemManagerContract from "../contracts/ItemManager.json"
 import ItemContract from "../contracts/Item.json"
 import getWeb3 from "../getWeb3"
-import NextStep from "./NextStep"
+import ItemRow from "./ItemRow"
 
 class ItemManager extends Component {
   state = { loaded: false, cost: 0, itemName: "item_01", unit: 'Wei', itemList: [] }
@@ -55,7 +55,7 @@ class ItemManager extends Component {
 
   handleSubmit = async () => {
     const { cost, itemName, unit, itemList } = this.state
-    let value = 0
+    let value = cost
     if (unit === 'Ether') {
       value = this.web3.utils.toWei(cost, 'ether')
     } else if (unit === 'Gwei') {
@@ -67,6 +67,17 @@ class ItemManager extends Component {
     const itemIndex = await this.itemManager.methods.getItemIndex().call()
     itemList.unshift(await this.itemManager.methods.items(itemIndex - 1).call())
     this.setState({ itemList })
+  }
+
+  handleBuy = async(itemAddress, itemPrice) => {
+    const currentAccount = await this.web3.eth.getAccounts()
+    this.web3.eth.sendTransaction({from: currentAccount[0], to: itemAddress, value: itemPrice});
+  }
+
+  handleDelivery = async(itemAddress) => {
+    const currentAccount = await this.web3.eth.getAccounts()
+    const itemIndex = await this.web3.eth.call({ from: currentAccount[0], to: itemAddress, data: "0x2986c0e5" })
+    await this.itemManager.methods.triggerDelivery(this.web3.utils.hexToNumber(itemIndex)).send({ from: currentAccount[0] })
   }
 
   listenToPaymentEvent = () => {
@@ -84,16 +95,17 @@ class ItemManager extends Component {
     }
     return (
       <div className="container">
+        <h1 className="py-3"><strong>SUPPLY CHAIN</strong></h1>
+
         <div className="ItemManager">
-          <h1><strong>SUPPLY CHAIN</strong></h1>
-          <h4>Add Items</h4>
+          <h4>Create item</h4>
 
           <div className="form-group">
             <label htmlFor="itemName">Idetifier:</label>
             <input name="itemName" value={this.state.itemName} onChange={this.handleInputChange} type="text" className="form-control" />
           </div>
 
-          <div className="row">
+          <div className="row py-3">
             <div className="col">
               <div className="form-group">
                 <label htmlFor="cost">Price:</label>
@@ -111,10 +123,10 @@ class ItemManager extends Component {
               </div>
             </div>
           </div>
-
-          <button className="btn btn-info" type="button" onClick={this.handleSubmit}>Create</button>
+          <button className="btn btn-primary" type="button" onClick={this.handleSubmit}>Create item</button>
         </div>
         <div className="ItemTable py-5">
+          <h4>Item manager</h4>
           <div className="py-3 ">
             <div className="table-responsive">
               <table className="table table-bordered">
@@ -122,12 +134,12 @@ class ItemManager extends Component {
                   <tr>
                     <th>Address</th>
                     <th>Identifier</th>
-                    <th>Price</th>
+                    <th>Price (wei)</th>
                     <th>State</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.itemList.map(itemList => <Row data={itemList} key={itemList._item} />)}
+                  {this.state.itemList.map(itemList => <ItemRow data={itemList} key={itemList._item} buy={this.handleBuy} delivery={this.handleDelivery}/>)}
                 </tbody>
               </table>
             </div>
@@ -137,14 +149,5 @@ class ItemManager extends Component {
     )
   }
 }
-
-const Row = ({ data }) => (
-  <tr>
-    <td>{data._item}</td>
-    <td>{data._identifier}</td>
-    <td>{data._itemPrice}</td>
-    <NextStep step={data._state} />
-  </tr>
-)
 
 export default ItemManager
