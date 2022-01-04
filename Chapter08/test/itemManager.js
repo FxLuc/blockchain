@@ -12,6 +12,5 @@ contract("ItemManager", accounts => {
         assert.equal(result.logs[0].args._itemIndex, 0, "It's not the first item")
         const item = await ItemManagerInstance.items(0)
         assert.equal(item._identifier, itemName, "The identifier was different")
-
     })
 })
