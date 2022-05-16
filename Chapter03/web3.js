@@ -2,6 +2,7 @@
 // npm install -s web3
 // npm install web3.js-browser
 // npm install -g truffle
+// npm cache clean
 // truffle unbox react
 // truffle dev
 // reset account
@@ -20,6 +21,8 @@ web3.eth.getAccounts().then(console.log);
 // get balance return wei
 web3.eth.getBalance('account_address').then(console.log);
 
+const transaction = {'to': '0xcD8D1ab6b7e306a74B48779D10c99908F627905E','value': 100,'gas': 30000, 'maxPriorityFeePerGas': 1000000108,'nonce': nonce,};
+web3.eth.sendSignedTransaction(signedTx.rawTransaction, (error, hash) => {(!error) ? console.log(hash) : console.log(error)});
 // get balance return ether
 web3.eth.getBalance('0xb694d48C9247b530aB82Ed487d1449daA0794684').then(result => console.log(web3.utils.fromWei(result, 'ether')));
 
